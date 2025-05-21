@@ -24,7 +24,8 @@ def add_empty_columns(df: DataFrame):
         df[col] = ''
 
 
-def drop_unused_columns(df: DataFrame):
+def drop_unused_columns_and_rows(df: DataFrame):
+    df = df[df['Wallet Name'].str.startswith("@ ")]
     return df.drop(columns=['Value (GBP)'])
 
 
@@ -37,5 +38,5 @@ class HoldingLoader:
         convert_asset_name(df)
         convert_numeric_columns(df)
         add_empty_columns(df)
-        df = drop_unused_columns(df)
+        df = drop_unused_columns_and_rows(df)
         return df
