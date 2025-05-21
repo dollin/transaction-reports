@@ -1,0 +1,5 @@
+.idea
+logs
+ethereum_analysis/config.ini
+!data/README.md
+data/**
