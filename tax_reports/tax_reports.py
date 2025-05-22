@@ -8,19 +8,21 @@ from calculator.asset_calculator import AssetCalculator
 from reporter.asset_reporter import AssetReporter
 from reporter.summary_reporter import SummaryReporter
 
-ignorable_items = {}
+exclude_items = {}
+include_items = {}
+tax_year_from = 2024
 
 
 def find_csv_filename(file_pattern: str):
     for filename in os.listdir('../data'):
-        if file_pattern in filename.lower() and filename.endswith('.csv'):
+        if file_pattern in filename.lower() and f"_{tax_year_from}_" in filename and filename.endswith('.csv'):
             return filename
     return None
 
 
 def execute_tax_reports():
     df = get_dataframe_from_reports()
-    df = delete_from_dataframe(df)
+    df = filter_dataframe(df)
     asset_summary = AssetCalculator.calculate_asset_summary(df)
     SummaryReporter.generate_summary_for_assets(asset_summary)
     AssetReporter.generate_transaction_details_per_asset(df, asset_summary)
@@ -34,17 +36,26 @@ def get_dataframe_from_reports():
     return df[transactions_df.columns]
 
 
-def delete_from_dataframe(df):
-    if ignorable_items is None:
+def filter_dataframe(df):
+    df = df.groupby('Asset').filter(lambda group: not group['Wallet Name'].str.startswith('@ ').all())
+    if exclude_items is None or not exclude_items:
         return df
-    for key, values in ignorable_items.items():
+    for key, values in exclude_items.items():
         for value in values:
             df = df[df[key] != str(value).upper()]
+    if include_items is None or not include_items:
+        return df
+    for key, values in include_items.items():
+        for value in values:
+            df = df[df[key] == str(value).upper()]
     return df
 
 
 if __name__ == "__main__":
-    ignorable_items = {'Wallet Name': [],
-                       'Asset': ['banana', 'eth']
-                       }
+    exclude_items = {'Wallet Name': [],
+                     'Asset': []
+                     }
+    include_items = {'Wallet Name': [],
+                     'Asset': ['']
+                     }
     execute_tax_reports()
