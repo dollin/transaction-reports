@@ -1,3 +1,6 @@
+import unittest
 
-def test_the_test():
-    assert 1 == 1
+
+class TestGetApiKey(unittest.TestCase):
+    def test_the_test(self):
+        assert 1 == 1
