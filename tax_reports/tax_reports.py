@@ -8,6 +8,8 @@ from calculator.asset_calculator import AssetCalculator
 from reporter.asset_reporter import AssetReporter
 from reporter.summary_reporter import SummaryReporter
 
+ignorable_items = {}
+
 
 def find_csv_filename(file_pattern: str):
     for filename in os.listdir('../data'):
@@ -16,9 +18,9 @@ def find_csv_filename(file_pattern: str):
     return None
 
 
-def execute_tax_reports(to_delete=None):
+def execute_tax_reports():
     df = get_dataframe_from_reports()
-    df = delete_from_dataframe(df, to_delete)
+    df = delete_from_dataframe(df)
     asset_summary = AssetCalculator.calculate_asset_summary(df)
     SummaryReporter.generate_summary_for_assets(asset_summary)
     AssetReporter.generate_transaction_details_per_asset(df, asset_summary)
@@ -32,17 +34,17 @@ def get_dataframe_from_reports():
     return df[transactions_df.columns]
 
 
-def delete_from_dataframe(df, to_delete=None):
-    if to_delete is None:
+def delete_from_dataframe(df):
+    if ignorable_items is None:
         return df
-    for key, values in to_delete.items():
+    for key, values in ignorable_items.items():
         for value in values:
             df = df[df[key] != str(value).upper()]
     return df
 
 
 if __name__ == "__main__":
-    data_to_delete = {'Wallet Name': [],
-                      'Asset': ['banana', 'eth']
-                      }
-    execute_tax_reports(data_to_delete)
+    ignorable_items = {'Wallet Name': [],
+                       'Asset': ['banana', 'eth']
+                       }
+    execute_tax_reports()
