@@ -38,16 +38,12 @@ def get_dataframe_from_reports():
 
 def filter_dataframe(df):
     df = df.groupby('Asset').filter(lambda group: not group['Wallet Name'].str.startswith('@ ').all())
-    if exclude_items is None or not exclude_items:
-        return df
     for key, values in exclude_items.items():
         for value in values:
             df = df[df[key] != str(value).upper()]
-    if include_items is None or not include_items:
-        return df
     for key, values in include_items.items():
         for value in values:
-            df = df[df[key] == str(value).upper()]
+            df = df[df[key] == str(value)]
     return df
 
 
@@ -55,7 +51,7 @@ if __name__ == "__main__":
     exclude_items = {'Wallet Name': [],
                      'Asset': []
                      }
-    include_items = {'Wallet Name': [],
-                     'Asset': ['']
+    include_items = {'Wallet Name': ['Coinbase'],
+                     'Asset': []
                      }
     execute_tax_reports()
