@@ -1,4 +1,4 @@
-import common_util
+from tax_reports.utils import common_util
 
 
 def generate_table(df, title=None):
