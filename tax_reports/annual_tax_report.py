@@ -2,9 +2,9 @@ import os
 
 import pandas as pd
 
+from calculator.asset_calculator import AssetCalculator
 from loader.holding_loader import HoldingLoader
 from loader.transaction_loader import TransactionLoader
-from calculator.asset_calculator import AssetCalculator
 from reporter.asset_reporter import AssetReporter
 from reporter.summary_reporter import SummaryReporter
 

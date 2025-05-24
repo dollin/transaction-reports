@@ -1,8 +1,7 @@
-from pathlib import Path
-
-import pandas as pd
-
+from tax_reports.utils.common_util import *
 from pandas import DataFrame
+from pathlib import Path
+import pandas as pd
 
 
 def rename_columns(df: DataFrame):
@@ -12,16 +11,6 @@ def rename_columns(df: DataFrame):
 
 def convert_asset_name(df: DataFrame):
     df['Asset'] = df['Asset'].apply(lambda x: x.strip().split(' ')[0])
-
-
-def convert_numeric_columns(df: DataFrame):
-    numeric_columns = ['Qty', 'Cost']
-    df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
-
-
-def add_empty_columns(df: DataFrame):
-    for col in ['Date Sold', 'Date Acquired', 'Notes']:
-        df[col] = ''
 
 
 def drop_unused_columns_and_rows(df: DataFrame):
@@ -36,7 +25,7 @@ class HoldingLoader:
         df = pd.read_csv(Path(__file__).resolve().parent.parent.parent / "data" / file_name, skiprows=2)
         rename_columns(df)
         convert_asset_name(df)
-        convert_numeric_columns(df)
-        add_empty_columns(df)
+        convert_numeric_columns(df, ['Qty', 'Cost'])
+        add_empty_columns(df, ['Date Sold', 'Date Acquired', 'Notes'])
         df = drop_unused_columns_and_rows(df)
         return df

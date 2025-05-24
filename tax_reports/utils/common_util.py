@@ -1,5 +1,6 @@
 import math
 
+import pandas as pd
 from pandas import DataFrame, Series
 
 
@@ -35,3 +36,21 @@ def calculate_value(row: Series, col: str):
     if col == 'Gain/Loss %':
         return as_percentage(row[col])
     return str(row[col])
+
+
+def add_empty_columns(df: DataFrame, columns=None):
+    for col in columns:
+        df[col] = ''
+
+
+def convert_datetime_columns(df: DataFrame, columns=None):
+    for col in columns:
+        date_series = pd.to_datetime(df[col], format='%d/%m/%Y %H:%M', errors='coerce')
+        if not date_series.isna().all():
+            df[col] = date_series.dt.date.fillna('')
+        else:
+            df[col] = date_series.fillna('')
+
+
+def convert_numeric_columns(df: DataFrame, columns=None):
+    df[columns] = df[columns].apply(pd.to_numeric, errors='coerce')
