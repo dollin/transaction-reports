@@ -2,8 +2,9 @@ from tax_reports.utils import common_util
 
 
 def generate_table(df, title=None):
+    table_lines = []
     if title:
-        print(f"\n{title}\n")
+        table_lines.append(f"\n{title}\n")
 
     headers = df.columns.tolist()
     col_widths = {}
@@ -18,14 +19,15 @@ def generate_table(df, title=None):
     separator = "|"
     for col in headers:
         separator += f"{'-' * (col_widths[col] + 2)}|"
-    print(separator)
-    print(header_line)
-    print(separator)
+    table_lines.append(separator)
+    table_lines.append(header_line)
+    table_lines.append(separator)
     for _, row in df.iterrows():
         row_line = "|"
         for col in headers:
             value = common_util.calculate_value(row, col)
             row_line += f" {value.ljust(col_widths[col])} |"
-        print(row_line)
-    print(separator)
-    print("")
+        table_lines.append(row_line)
+    table_lines.append(separator)
+    table_lines.append("")
+    return "\n".join(table_lines)
